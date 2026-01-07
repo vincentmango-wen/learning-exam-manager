@@ -1,0 +1,103 @@
+package com.example.learning_exam_manager.controller;
+
+import com.example.learning_exam_manager.dto.ExamDto;
+import com.example.learning_exam_manager.form.ExamForm;
+import com.example.learning_exam_manager.service.ExamService;
+import com.example.learning_exam_manager.service.SubjectService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/exams")
+public class ExamController {
+    
+    private final ExamService examService;
+    private final SubjectService subjectService;
+    
+    @Autowired
+    public ExamController(ExamService examService, SubjectService subjectService) {
+        this.examService = examService;
+        this.subjectService = subjectService;
+    }
+    
+    @GetMapping
+    public String list(Model model) {
+        List<ExamDto> exams = examService.findAll();
+        model.addAttribute("exams", exams);
+        return "exams/list";
+    }
+    
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        ExamDto exam = examService.findById(id);
+        model.addAttribute("exam", exam);
+        return "exams/detail";
+    }
+    
+    @GetMapping("/new")
+    public String newForm(Model model) {
+        model.addAttribute("examForm", new ExamForm());
+        model.addAttribute("subjects", subjectService.findAll());
+        return "exams/new";
+    }
+    
+    @PostMapping
+    public String create(@Valid @ModelAttribute ExamForm form, 
+                        BindingResult result,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            model.addAttribute("subjects", subjectService.findAll());
+            return "exams/new";
+        }
+        examService.create(form);
+        redirectAttributes.addFlashAttribute("message", "試験を登録しました");
+        return "redirect:/exams";
+    }
+    
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        ExamDto exam = examService.findById(id);
+        ExamForm form = new ExamForm(
+                exam.getSubjectId(),
+                exam.getExamName(),
+                exam.getMaxScore(),
+                exam.getPassingScore()
+        );
+        model.addAttribute("examForm", form);
+        model.addAttribute("examId", id);
+        model.addAttribute("subjects", subjectService.findAll());
+        return "exams/edit";
+    }
+    
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id,
+                        @Valid @ModelAttribute ExamForm form,
+                        BindingResult result,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            model.addAttribute("examId", id);
+            model.addAttribute("subjects", subjectService.findAll());
+            return "exams/edit";
+        }
+        examService.update(id, form);
+        redirectAttributes.addFlashAttribute("message", "試験を更新しました");
+        return "redirect:/exams";
+    }
+    
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        examService.delete(id);
+        redirectAttributes.addFlashAttribute("message", "試験を削除しました");
+        return "redirect:/exams";
+    }
+}
+
