@@ -26,10 +26,12 @@ public class SubjectController {
     
     @GetMapping
     public String list(Model model) {
-        List<SubjectDto> subjects = subjectService.findAll();
-        model.addAttribute("subjects", subjects);
-        return "subjects/list";
-    }
+    List<SubjectDto> subjects = subjectService.findAll();
+    model.addAttribute("subjects", subjects);
+    model.addAttribute("activePage", "subjects"); 
+    model.addAttribute("title", "科目一覧");  
+    return "subjects/list";
+}
     
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
