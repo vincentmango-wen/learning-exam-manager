@@ -31,6 +31,8 @@ public class ExamController {
     public String list(Model model) {
         List<ExamDto> exams = examService.findAll();
         model.addAttribute("exams", exams);
+        model.addAttribute("activePage", "exams");
+        model.addAttribute("title", "試験一覧");
         return "exams/list";
     }
     

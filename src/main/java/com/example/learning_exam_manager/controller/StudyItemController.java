@@ -31,6 +31,8 @@ public class StudyItemController {
     public String list(Model model) {
         List<StudyItemDto> studyItems = studyItemService.findAll();
         model.addAttribute("studyItems", studyItems);
+        model.addAttribute("activePage", "study-items");
+        model.addAttribute("title", "学習項目一覧");
         return "study-items/list";
     }
     

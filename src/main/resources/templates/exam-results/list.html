@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,35 +7,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">学習進捗管理</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">ダッシュボード</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/subjects">科目一覧</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/study-items">学習項目一覧</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/exams">試験一覧</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/exam-results">試験結果一覧</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- ナビゲーションメニューを読み込み -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
     
     <div class="container mt-4">
+        <!-- メッセージを読み込み -->
+        <div th:replace="~{fragments/layout :: messages}"></div>
+        
         <h1>試験結果一覧</h1>
         
         <div class="mb-3">
@@ -77,6 +55,7 @@
         </table>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JSを読み込み -->
+    <div th:replace="~{fragments/layout :: bootstrap-js}"></div>
 </body>
 </html>

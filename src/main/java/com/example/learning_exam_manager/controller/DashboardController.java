@@ -27,6 +27,8 @@ public class DashboardController {
         
         model.addAttribute("subjectProgress", subjectProgress);
         model.addAttribute("recentExamResults", recentExamResults);
+        model.addAttribute("activePage", "dashboard");
+        model.addAttribute("title", "ダッシュボード");
         return "dashboard/index";
     }
 }
