@@ -41,6 +41,17 @@ public class ExamService {
     }
     
     @Transactional(readOnly = true)
+    public List<ExamDto> searchByName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // キーワードが空の場合は全件取得
+            return findAll();
+        }
+        return examRepository.findByExamNameContaining(keyword.trim()).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
     public ExamDto findById(Long id) {
         Exam exam = examRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("試験が見つかりません: " + id));

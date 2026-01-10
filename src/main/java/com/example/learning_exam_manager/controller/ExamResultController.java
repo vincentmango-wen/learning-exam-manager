@@ -29,8 +29,14 @@ public class ExamResultController {
     }
     
     @GetMapping
-    public String list(Model model) {
-        List<ExamResultDto> examResults = examResultService.findAll();
+    public String list(@RequestParam(required = false) String keyword, Model model) {
+        List<ExamResultDto> examResults;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            examResults = examResultService.search(keyword);
+            model.addAttribute("keyword", keyword);  // 検索キーワードを保持
+        } else {
+            examResults = examResultService.findAll();
+        }
         model.addAttribute("examResults", examResults);
         model.addAttribute("activePage", "exam-results");
         model.addAttribute("title", "試験結果一覧");

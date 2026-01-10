@@ -10,4 +10,7 @@ import java.util.List;
 public interface ExamRepository extends JpaRepository<Exam, Long> {
     
     List<Exam> findBySubjectId(Long subjectId);
+    
+    // 試験名で部分一致検索
+    List<Exam> findByExamNameContaining(String examName);
 }

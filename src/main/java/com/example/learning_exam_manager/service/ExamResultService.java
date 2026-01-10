@@ -48,6 +48,17 @@ public class ExamResultService {
     }
     
     @Transactional(readOnly = true)
+    public List<ExamResultDto> search(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // キーワードが空の場合は全件取得
+            return findAll();
+        }
+        return examResultRepository.findByExamExamNameContaining(keyword.trim()).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
     public ExamResultDto findById(Long id) {
         ExamResult examResult = examResultRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("試験結果が見つかりません: " + id));
