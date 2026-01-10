@@ -56,7 +56,7 @@ public class StudyItemService {
             items = studyItemRepository.findBySubjectId(subjectId);
         } else {
             // キーワードのみで検索
-            items = studyItemRepository.findByTitleContaining(keyword.trim());
+            items = studyItemRepository.findByTitleContaining(keyword != null ? keyword.trim() : "");
         }
         
         return items.stream()
