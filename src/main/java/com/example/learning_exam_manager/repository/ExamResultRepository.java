@@ -22,4 +22,8 @@ public interface ExamResultRepository extends JpaRepository<ExamResult, Long> {
     @Query("SELECT er FROM ExamResult er WHERE er.takenAt BETWEEN :startDate AND :endDate")
     List<ExamResult> findByTakenAtBetween(@Param("startDate") LocalDate startDate, 
                                           @Param("endDate") LocalDate endDate);
+    
+    // 試験名で部分一致検索（Examとの関連を通じて検索）
+    @Query("SELECT er FROM ExamResult er WHERE er.exam.examName LIKE CONCAT('%', :examName, '%')")
+    List<ExamResult> findByExamExamNameContaining(@Param("examName") String examName);
 }
