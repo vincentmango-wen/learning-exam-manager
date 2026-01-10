@@ -28,8 +28,14 @@ public class ExamController {
     }
     
     @GetMapping
-    public String list(Model model) {
-        List<ExamDto> exams = examService.findAll();
+    public String list(@RequestParam(required = false) String keyword, Model model) {
+        List<ExamDto> exams;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            exams = examService.searchByName(keyword);
+            model.addAttribute("keyword", keyword);  // 検索キーワードを保持
+        } else {
+            exams = examService.findAll();
+        }
         model.addAttribute("exams", exams);
         model.addAttribute("activePage", "exams");
         model.addAttribute("title", "試験一覧");
