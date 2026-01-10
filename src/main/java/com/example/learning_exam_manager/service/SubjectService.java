@@ -28,6 +28,17 @@ public class SubjectService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<SubjectDto> searchByName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // キーワードが空の場合は全件取得
+            return findAll();
+        }
+        return subjectRepository.findByNameContaining(keyword.trim()).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
     
     @Transactional(readOnly = true)
     public SubjectDto findById(Long id) {
