@@ -17,8 +17,32 @@
         
         <h1>科目一覧</h1>
         
+        <!-- 検索フォームを追加 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <form th:action="@{/subjects}" method="get" class="d-flex">
+                    <input type="text" 
+                        name="keyword" 
+                        class="form-control me-2" 
+                        th:value="${keyword != null ? keyword : ''}"
+                        placeholder="科目名で検索">
+                    <button type="submit" class="btn btn-outline-primary">検索</button>
+                    <a th:if="${keyword != null && !keyword.isEmpty()}" 
+                    href="/subjects" 
+                    class="btn btn-outline-secondary ms-2">クリア</a>
+                </form>
+            </div>
+        </div>
+        
         <div class="mb-3">
             <a href="/subjects/new" class="btn btn-primary">新規登録</a>
+        </div>
+        
+        <!-- 検索結果の件数を表示 -->
+        <div th:if="${keyword != null && !keyword.isEmpty()}" class="mb-2">
+            <p class="text-muted">
+                「<span th:text="${keyword}"></span>」の検索結果: <span th:text="${#lists.size(subjects)}"></span>件
+            </p>
         </div>
         
         <table class="table table-striped">

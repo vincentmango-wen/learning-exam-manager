@@ -25,13 +25,19 @@ public class SubjectController {
     }
     
     @GetMapping
-    public String list(Model model) {
-    List<SubjectDto> subjects = subjectService.findAll();
-    model.addAttribute("subjects", subjects);
-    model.addAttribute("activePage", "subjects"); 
-    model.addAttribute("title", "科目一覧");  
-    return "subjects/list";
-}
+    public String list(@RequestParam(required = false) String keyword, Model model) {
+        List<SubjectDto> subjects;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            subjects = subjectService.searchByName(keyword);
+            model.addAttribute("keyword", keyword);  // 検索キーワードを保持
+        } else {
+            subjects = subjectService.findAll();
+        }
+        model.addAttribute("subjects", subjects);
+        model.addAttribute("activePage", "subjects");
+        model.addAttribute("title", "科目一覧");
+        return "subjects/list";
+    }
     
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
