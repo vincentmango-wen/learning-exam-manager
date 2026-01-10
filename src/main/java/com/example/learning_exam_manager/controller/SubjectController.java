@@ -10,6 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -25,15 +29,26 @@ public class SubjectController {
     }
     
     @GetMapping
-    public String list(@RequestParam(required = false) String keyword, Model model) {
-        List<SubjectDto> subjects;
+    public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       Model model) {
+        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        
+        Page<SubjectDto> subjectsPage;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            subjects = subjectService.searchByName(keyword);
-            model.addAttribute("keyword", keyword);  // 検索キーワードを保持
+            subjectsPage = subjectService.searchByName(keyword, pageable);
+            model.addAttribute("keyword", keyword);
         } else {
-            subjects = subjectService.findAll();
+            subjectsPage = subjectService.findAll(pageable);
         }
-        model.addAttribute("subjects", subjects);
+        
+        model.addAttribute("subjects", subjectsPage.getContent());  // 現在のページのデータ
+        model.addAttribute("currentPage", page);  // 現在のページ番号
+        model.addAttribute("totalPages", subjectsPage.getTotalPages());  // 総ページ数
+        model.addAttribute("totalItems", subjectsPage.getTotalElements());  // 総件数
+        model.addAttribute("pageSize", size);  // ページサイズ
         model.addAttribute("activePage", "subjects");
         model.addAttribute("title", "科目一覧");
         return "subjects/list";

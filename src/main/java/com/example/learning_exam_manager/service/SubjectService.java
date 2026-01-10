@@ -7,6 +7,8 @@ import com.example.learning_exam_manager.repository.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,21 @@ public class SubjectService {
         return subjectRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SubjectDto> findAll(Pageable pageable) {
+        return subjectRepository.findAll(pageable)
+                .map(this::toDto);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<SubjectDto> searchByName(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return findAll(pageable);
+        }
+        return subjectRepository.findByNameContaining(keyword.trim(), pageable)
+                .map(this::toDto);
     }
 
     @Transactional(readOnly = true)
