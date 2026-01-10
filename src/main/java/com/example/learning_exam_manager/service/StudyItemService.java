@@ -39,6 +39,30 @@ public class StudyItemService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<StudyItemDto> search(String keyword, Long subjectId) {
+        if ((keyword == null || keyword.trim().isEmpty()) && subjectId == null) {
+            // 検索条件がない場合は全件取得
+            return findAll();
+        }
+        
+        List<StudyItem> items;
+        if (subjectId != null && keyword != null && !keyword.trim().isEmpty()) {
+            // 科目IDとキーワードの両方で検索
+            items = studyItemRepository.findBySubjectIdAndTitleContaining(subjectId, keyword.trim());
+        } else if (subjectId != null) {
+            // 科目IDのみで検索
+            items = studyItemRepository.findBySubjectId(subjectId);
+        } else {
+            // キーワードのみで検索
+            items = studyItemRepository.findByTitleContaining(keyword.trim());
+        }
+        
+        return items.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
     
     @Transactional(readOnly = true)
     public StudyItemDto findById(Long id) {

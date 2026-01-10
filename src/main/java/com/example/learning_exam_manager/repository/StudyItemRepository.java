@@ -13,4 +13,9 @@ public interface StudyItemRepository extends JpaRepository<StudyItem, Long> {
     List<StudyItem> findBySubjectId(Long subjectId);
     
     List<StudyItem> findBySubjectIdAndStatus(Long subjectId, Status status);
+
+    List<StudyItem> findByTitleContaining(String title);
+    
+    List<StudyItem> findBySubjectIdAndTitleContaining(Long subjectId, String title);
 }
+

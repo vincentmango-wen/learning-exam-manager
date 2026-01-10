@@ -15,7 +15,45 @@
         <!-- メッセージを読み込み -->
         <div th:replace="~{fragments/layout :: messages}"></div>
         
-        <h1>学習項目一覧</h1>
+        <!-- 検索フォームを追加 -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <form th:action="@{/study-items}" method="get" class="row g-2">
+                    <div class="col-md-4">
+                        <select name="subjectId" class="form-select">
+                            <option value="">すべての科目</option>
+                            <option th:each="subject : ${subjects}"
+                                    th:value="${subject.id}"
+                                    th:text="${subject.name}"
+                                    th:selected="${selectedSubjectId != null && selectedSubjectId == subject.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" 
+                            name="keyword" 
+                            class="form-control" 
+                            th:value="${keyword != null ? keyword : ''}"
+                            placeholder="タイトルで検索">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">検索</button>
+                    </div>
+                </form>
+                <div class="mt-2">
+                    <a th:if="${keyword != null || selectedSubjectId != null}" 
+                    href="/study-items" 
+                    class="btn btn-outline-secondary btn-sm">クリア</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 検索結果の件数を表示 -->
+        <div th:if="${keyword != null || selectedSubjectId != null}" class="mb-2">
+            <p class="text-muted">
+                検索結果: <span th:text="${#lists.size(studyItems)}"></span>件
+            </p>
+        </div>
         
         <div class="mb-3">
             <a href="/study-items/new" class="btn btn-primary">新規登録</a>

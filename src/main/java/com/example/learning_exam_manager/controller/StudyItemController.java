@@ -28,9 +28,19 @@ public class StudyItemController {
     }
     
     @GetMapping
-    public String list(Model model) {
-        List<StudyItemDto> studyItems = studyItemService.findAll();
+    public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(required = false) Long subjectId,
+                       Model model) {
+        List<StudyItemDto> studyItems;
+        if ((keyword != null && !keyword.trim().isEmpty()) || subjectId != null) {
+            studyItems = studyItemService.search(keyword, subjectId);
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("selectedSubjectId", subjectId);
+        } else {
+            studyItems = studyItemService.findAll();
+        }
         model.addAttribute("studyItems", studyItems);
+        model.addAttribute("subjects", subjectService.findAll());  // 科目選択用
         model.addAttribute("activePage", "study-items");
         model.addAttribute("title", "学習項目一覧");
         return "study-items/list";
