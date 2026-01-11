@@ -6,6 +6,7 @@
     <title th:text="${title != null ? title + ' - 学習進捗管理' : 'ダッシュボード - 学習進捗管理'}">ダッシュボード</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <th:block th:replace="~{fragments/layout :: footer-styles}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- ナビゲーションメニューを読み込み -->
@@ -21,6 +22,15 @@
         <div class="row mt-4">
             <div class="col-12">
                 <h2>科目別進捗率</h2>
+
+                <!-- グラフを表示 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <canvas id="progressChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- 表を表示 -->
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
@@ -58,6 +68,15 @@
         <div class="row mt-4">
             <div class="col-12">
                 <h2>直近の試験結果</h2>
+
+                <!-- グラフを表示 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <canvas id="examResultChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- 表を表示 -->
                 <div class="card">
                     <div class="card-body">
                         <table class="table table-striped">
@@ -95,5 +114,78 @@
     <!-- Bootstrap JSを読み込み -->
     <div th:replace="~{fragments/layout :: bootstrap-js}"></div>
     <div th:replace="~{fragments/layout :: footer}"></div>
+    <script>
+        // 進捗率の棒グラフ
+        const progressCtx = document.getElementById('progressChart');
+        if (progressCtx) {
+            const progressData = {
+                labels: [/* 科目名のリスト */],
+                datasets: [{
+                    label: '進捗率 (%)',
+                    data: [/* 進捗率のリスト */],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            // Thymeleafでデータを埋め込む
+            const subjectNames = /*[[${subjectProgress.![subjectName]}]]*/ [];
+            const progressRates = /*[[${subjectProgress.![progressRate]}]]*/ [];
+            
+            progressData.labels = subjectNames;
+            progressData.datasets[0].data = progressRates;
+            
+            new Chart(progressCtx, {
+                type: 'bar',
+                data: progressData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // 試験結果の折れ線グラフ
+        const examResultCtx = document.getElementById('examResultChart');
+        if (examResultCtx) {
+            const examResultData = {
+                labels: [/* 受験日のリスト */],
+                datasets: [{
+                    label: '得点',
+                    data: [/* 得点のリスト */],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            };
+            
+            // Thymeleafでデータを埋め込む
+            const takenDates = /*[[${recentExamResults.![#temporals.format(takenAt, 'yyyy-MM-dd')]}]]*/ [];
+            const scores = /*[[${recentExamResults.![score]}]]*/ [];
+            
+            examResultData.labels = takenDates;
+            examResultData.datasets[0].data = scores;
+            
+            new Chart(examResultCtx, {
+                type: 'line',
+                data: examResultData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>
