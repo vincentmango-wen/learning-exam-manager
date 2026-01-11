@@ -9,6 +9,8 @@ import com.example.learning_exam_manager.repository.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +34,12 @@ public class StudyItemService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
-    
+
+    @Transactional(readOnly = true)
+    public Page<StudyItemDto> findAll(Pageable pageable) {
+        return studyItemRepository.findAll(pageable).map(this::toDto);
+    }
+
     @Transactional(readOnly = true)
     public List<StudyItemDto> findBySubjectId(Long subjectId) {
         return studyItemRepository.findBySubjectId(subjectId).stream()
@@ -64,6 +71,28 @@ public class StudyItemService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
+    public Page<StudyItemDto> search(String keyword, Long subjectId, Pageable pageable) {
+        Page<StudyItem> itemsPage;
+        
+        if (subjectId != null && keyword != null && !keyword.trim().isEmpty()) {
+            // 科目IDとキーワードの両方で検索
+            itemsPage = studyItemRepository.findBySubjectIdAndTitleContaining(
+                subjectId, keyword.trim(), pageable);
+        } else if (subjectId != null) {
+            // 科目IDのみで検索
+            itemsPage = studyItemRepository.findBySubjectId(subjectId, pageable);
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+            // キーワードのみで検索
+            itemsPage = studyItemRepository.findByTitleContaining(keyword.trim(), pageable);
+        } else {
+            // 検索条件がない場合は全件取得（ページネーション付き）
+            itemsPage = studyItemRepository.findAll(pageable);
+        }
+        
+        return itemsPage.map(this::toDto);
+    }
+
     @Transactional(readOnly = true)
     public StudyItemDto findById(Long id) {
         StudyItem studyItem = studyItemRepository.findById(id)
