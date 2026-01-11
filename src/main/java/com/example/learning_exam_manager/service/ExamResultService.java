@@ -9,7 +9,8 @@ import com.example.learning_exam_manager.repository.ExamResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,11 @@ public class ExamResultService {
         return examResultRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ExamResultDto> findAll(Pageable pageable) {
+        return examResultRepository.findAll(pageable).map(this::toDto);
     }
     
     @Transactional(readOnly = true)
@@ -56,6 +62,12 @@ public class ExamResultService {
         return examResultRepository.findByExamExamNameContaining(keyword.trim()).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public Page<ExamResultDto> search(String keyword, Pageable pageable) {
+        return examResultRepository.findByExamExamNameContaining(keyword.trim(), pageable).map(this::toDto);
     }
     
     @Transactional(readOnly = true)
