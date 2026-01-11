@@ -64,7 +64,6 @@ public class ExamResultService {
                 .collect(Collectors.toList());
     }
 
-
     @Transactional(readOnly = true)
     public Page<ExamResultDto> search(String keyword, Pageable pageable) {
         return examResultRepository.findByExamExamNameContaining(keyword.trim(), pageable).map(this::toDto);
