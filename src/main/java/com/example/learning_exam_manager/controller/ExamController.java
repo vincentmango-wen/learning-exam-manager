@@ -12,7 +12,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/exams")
@@ -28,15 +31,26 @@ public class ExamController {
     }
     
     @GetMapping
-    public String list(@RequestParam(required = false) String keyword, Model model) {
-        List<ExamDto> exams;
+    public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       Model model) {
+        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        
+        Page<ExamDto> examsPage;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            exams = examService.searchByName(keyword);
+            examsPage = examService.searchByName(keyword, pageable);
             model.addAttribute("keyword", keyword);  // 検索キーワードを保持
         } else {
-            exams = examService.findAll();
+            examsPage = examService.findAll(pageable);
         }
-        model.addAttribute("exams", exams);
+        
+        model.addAttribute("exams", examsPage.getContent());  // 現在のページのデータ
+        model.addAttribute("currentPage", page);  // 現在のページ番号
+        model.addAttribute("totalPages", examsPage.getTotalPages());  // 総ページ数
+        model.addAttribute("totalItems", examsPage.getTotalElements());  // 総件数
+        model.addAttribute("pageSize", size);  // ページサイズ
         model.addAttribute("activePage", "exams");
         model.addAttribute("title", "試験一覧");
         return "exams/list";
