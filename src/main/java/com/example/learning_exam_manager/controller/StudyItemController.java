@@ -11,6 +11,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+
 
 import java.util.List;
 
@@ -30,16 +36,28 @@ public class StudyItemController {
     @GetMapping
     public String list(@RequestParam(required = false) String keyword,
                        @RequestParam(required = false) Long subjectId,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
                        Model model) {
-        List<StudyItemDto> studyItems;
-        if ((keyword != null && !keyword.trim().isEmpty()) || subjectId != null) {
-            studyItems = studyItemService.search(keyword, subjectId);
+        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        
+        Page<StudyItemDto> studyItemsPage = studyItemService.search(keyword, subjectId, pageable);
+        
+        model.addAttribute("studyItems", studyItemsPage.getContent());  // 現在のページのデータ
+        model.addAttribute("currentPage", page);  // 現在のページ番号
+        model.addAttribute("totalPages", studyItemsPage.getTotalPages());  // 総ページ数
+        model.addAttribute("totalItems", studyItemsPage.getTotalElements());  // 総件数
+        model.addAttribute("pageSize", size);  // ページサイズ
+        
+        // 検索条件を保持（検索フォーム用）
+        if (keyword != null && !keyword.trim().isEmpty()) {
             model.addAttribute("keyword", keyword);
-            model.addAttribute("selectedSubjectId", subjectId);
-        } else {
-            studyItems = studyItemService.findAll();
         }
-        model.addAttribute("studyItems", studyItems);
+        if (subjectId != null) {
+            model.addAttribute("selectedSubjectId", subjectId);
+        }
+        
         model.addAttribute("subjects", subjectService.findAll());  // 科目選択用
         model.addAttribute("activePage", "study-items");
         model.addAttribute("title", "学習項目一覧");
