@@ -21,6 +21,7 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <form th:action="@{/exams}" method="get" class="d-flex">
+                    <input type="hidden" name="page" value="0">
                     <input type="text" 
                            name="keyword" 
                            class="form-control me-2" 
@@ -73,6 +74,44 @@
                 </tr>
             </tbody>
         </table>
+        <!-- ページネーション -->
+        <nav th:if="${totalPages > 1}" aria-label="ページネーション">
+            <ul class="pagination justify-content-center">
+                <!-- 前のページ -->
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/exams(keyword=${keyword}, page=${currentPage - 1}, size=${pageSize})}"
+                       th:if="${currentPage > 0}">前へ</a>
+                    <span class="page-link" th:if="${currentPage == 0}">前へ</span>
+                </li>
+                
+                <!-- ページ番号 -->
+                <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}" 
+                    class="page-item"
+                    th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/exams(keyword=${keyword}, page=${pageNum}, size=${pageSize})}"
+                       th:text="${pageNum + 1}"></a>
+                </li>
+                
+                <!-- 次のページ -->
+                <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/exams(keyword=${keyword}, page=${currentPage + 1}, size=${pageSize})}"
+                       th:if="${currentPage < totalPages - 1}">次へ</a>
+                    <span class="page-link" th:if="${currentPage >= totalPages - 1}">次へ</span>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- ページ情報の表示 -->
+        <div class="text-center mt-3">
+            <p class="text-muted">
+                全 <span th:text="${totalItems}"></span> 件中 
+                <span th:text="${currentPage * pageSize + 1}"></span> - 
+                <span th:text="${currentPage * pageSize + exams.size()}"></span> 件を表示
+            </p>
+        </div>
     </div>
     
     <!-- Bootstrap JSを読み込み -->
