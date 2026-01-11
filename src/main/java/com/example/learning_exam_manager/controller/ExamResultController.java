@@ -12,8 +12,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
-import java.util.List;
 
 @Controller
 @RequestMapping("/exam-results")
@@ -29,15 +32,27 @@ public class ExamResultController {
     }
     
     @GetMapping
-    public String list(@RequestParam(required = false) String keyword, Model model) {
-        List<ExamResultDto> examResults;
+    public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       Model model) {
+        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
+        // 試験結果は受験日の降順でソート（新しい順）
+        Pageable pageable = PageRequest.of(page, size, Sort.by("takenAt").descending());
+        
+        Page<ExamResultDto> examResultsPage;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            examResults = examResultService.search(keyword);
+            examResultsPage = examResultService.search(keyword, pageable);
             model.addAttribute("keyword", keyword);  // 検索キーワードを保持
         } else {
-            examResults = examResultService.findAll();
+            examResultsPage = examResultService.findAll(pageable);
         }
-        model.addAttribute("examResults", examResults);
+        
+        model.addAttribute("examResults", examResultsPage.getContent());  // 現在のページのデータ
+        model.addAttribute("currentPage", page);  // 現在のページ番号
+        model.addAttribute("totalPages", examResultsPage.getTotalPages());  // 総ページ数
+        model.addAttribute("totalItems", examResultsPage.getTotalElements());  // 総件数
+        model.addAttribute("pageSize", size);  // ページサイズ
         model.addAttribute("activePage", "exam-results");
         model.addAttribute("title", "試験結果一覧");
         return "exam-results/list";
