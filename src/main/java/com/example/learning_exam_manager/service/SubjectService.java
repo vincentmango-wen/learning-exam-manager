@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.example.learning_exam_manager.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class SubjectService {
     @Transactional(readOnly = true)
     public SubjectDto findById(Long id) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("科目が見つかりません: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("科目が見つかりません: " + id));
         return toDto(subject);
     }
     
@@ -72,7 +73,7 @@ public class SubjectService {
     
     public SubjectDto update(Long id, SubjectForm form) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("科目が見つかりません: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("科目が見つかりません: " + id));
         subject.setName(form.getName());
         subject.setDescription(form.getDescription());
         Subject updated = subjectRepository.save(subject);
