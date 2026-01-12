@@ -14,10 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/subjects")
 public class SubjectController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SubjectController.class);
     
     private final SubjectService subjectService;
     
@@ -31,6 +35,7 @@ public class SubjectController {
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        Model model) {
+        logger.debug("科目一覧を表示します: keyword={}, page={}, size={}", keyword, page, size);
         // Pageableの作成（ページ番号、サイズ、ソート順を指定）
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         
@@ -49,19 +54,24 @@ public class SubjectController {
         model.addAttribute("pageSize", size);  // ページサイズ
         model.addAttribute("activePage", "subjects");
         model.addAttribute("title", "科目一覧");
+        logger.info("科目一覧を表示しました: totalPages={}, totalItems={}, pageSize={}", subjectsPage.getTotalPages(), subjectsPage.getTotalElements(), size);
         return "subjects/list";
     }
     
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
+        logger.debug("科目詳細を表示します: ID={}", id);
         SubjectDto subject = subjectService.findById(id);
         model.addAttribute("subject", subject);
+        logger.info("科目詳細を表示しました: ID={}, 名前={}", id, subject.getName());
         return "subjects/detail";
     }
     
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("subjectForm", new SubjectForm());
+        logger.debug("科目登録画面を表示します");
+        logger.info("科目登録画面を表示しました");
         return "subjects/new";
     }
     
@@ -73,16 +83,20 @@ public class SubjectController {
             return "subjects/new";
         }
         subjectService.create(form);
+        logger.info("科目を登録しました: 名前={}", form.getName());
         redirectAttributes.addFlashAttribute("message", "科目を登録しました");
+        logger.info("リダイレクト先に遷移します");
         return "redirect:/subjects";
     }
     
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        logger.debug("科目編集画面を表示します: ID={}", id);
         SubjectDto subject = subjectService.findById(id);
         SubjectForm form = new SubjectForm(subject.getName(), subject.getDescription());
         model.addAttribute("subjectForm", form);
         model.addAttribute("subjectId", id);
+        logger.info("科目編集画面を表示しました: ID={}, 名前={}", id, subject.getName());
         return "subjects/edit";
     }
     
@@ -92,16 +106,20 @@ public class SubjectController {
                         BindingResult result,
                         RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            logger.warn("科目編集画面でエラーが発生しました: ID={}", id);
             return "subjects/edit";
         }
         subjectService.update(id, form);
+        logger.info("科目を更新しました: ID={}, 名前={}", id, form.getName());
         redirectAttributes.addFlashAttribute("message", "科目を更新しました");
         return "redirect:/subjects";
     }
     
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        logger.warn("科目を削除します: ID={}", id);
         subjectService.delete(id);
+        logger.info("科目を削除しました: ID={}", id);
         redirectAttributes.addFlashAttribute("message", "科目を削除しました");
         return "redirect:/subjects";
     }
