@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class ExamResultService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ExamResultService.class);
     
     private final ExamResultRepository examResultRepository;
     private final ExamRepository examRepository;
@@ -29,14 +33,20 @@ public class ExamResultService {
     
     @Transactional(readOnly = true)
     public List<ExamResultDto> findAll() {
-        return examResultRepository.findAll().stream()
+        logger.debug("すべての試験結果を取得します");
+        List<ExamResultDto> result = examResultRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        logger.info("試験結果を{}件取得しました", result.size());
+        return result;
     }
 
     @Transactional(readOnly = true)
     public Page<ExamResultDto> findAll(Pageable pageable) {
-        return examResultRepository.findAll(pageable).map(this::toDto);
+        logger.debug("試験結果一覧をページングして取得します");
+        Page<ExamResult> result = examResultRepository.findAll(pageable);
+        logger.info("試験結果を{}件取得しました", result.getTotalElements());
+        return result.map(this::toDto);
     }
     
     @Transactional(readOnly = true)
@@ -77,6 +87,7 @@ public class ExamResultService {
     }
     
     public ExamResultDto create(ExamResultForm form) {
+        logger.info("新しい試験結果を作成します: 試験ID={}, 得点={}", form.getExamId(), form.getScore());
         Exam exam = examRepository.findById(form.getExamId())
                 .orElseThrow(() -> new RuntimeException("試験が見つかりません: " + form.getExamId()));
         
@@ -91,10 +102,12 @@ public class ExamResultService {
         );
         
         ExamResult saved = examResultRepository.save(examResult);
+        logger.info("試験結果を作成しました: ID={}, 試験名={}, 得点={}, 合否={}", saved.getId(), exam.getExamName(), saved.getScore(), saved.getPassed());
         return toDto(saved);
     }
     
     public ExamResultDto update(Long id, ExamResultForm form) {
+        logger.info("試験結果を更新します: ID={}", id);
         ExamResult examResult = examResultRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("試験結果が見つかりません: " + id));
         
@@ -112,11 +125,14 @@ public class ExamResultService {
         examResult.setPassed(passed);
         
         ExamResult updated = examResultRepository.save(examResult);
+        logger.info("試験結果を更新しました: ID={}, 試験名={}, 得点={}, 合否={}", updated.getId(), updated.getExam().getExamName(), updated.getScore(), updated.getPassed());
         return toDto(updated);
     }
     
     public void delete(Long id) {
+        logger.warn("試験結果を削除します: ID={}", id);
         examResultRepository.deleteById(id);
+        logger.info("試験結果を削除しました: ID={}", id);
     }
     
     private ExamResultDto toDto(ExamResult entity) {

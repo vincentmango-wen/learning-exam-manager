@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.example.learning_exam_manager.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class SubjectService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
     
     private final SubjectRepository subjectRepository;
     
@@ -27,15 +32,20 @@ public class SubjectService {
     
     @Transactional(readOnly = true)
     public List<SubjectDto> findAll() {
-        return subjectRepository.findAll().stream()
+        logger.debug("すべての科目を取得します");
+        List<SubjectDto> result = subjectRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        logger.info("科目を{}件取得しました", result.size());
+        return result;
     }
 
     @Transactional(readOnly = true)
     public Page<SubjectDto> findAll(Pageable pageable) {
-        return subjectRepository.findAll(pageable)
-                .map(this::toDto);
+        logger.debug("科目一覧をページングして取得します");
+        Page<Subject> result = subjectRepository.findAll(pageable);
+        logger.info("科目を{}件取得しました", result.getTotalElements());
+        return result.map(this::toDto);
     }
     
     @Transactional(readOnly = true)
@@ -66,22 +76,28 @@ public class SubjectService {
     }
     
     public SubjectDto create(SubjectForm form) {
+        logger.info("新しい科目を作成します: {}", form.getName());
         Subject subject = new Subject(form.getName(), form.getDescription());
         Subject saved = subjectRepository.save(subject);
+        logger.info("科目を作成しました: ID={}, 名前={}", saved.getId(), saved.getName());
         return toDto(saved);
     }
     
     public SubjectDto update(Long id, SubjectForm form) {
+        logger.info("科目を更新します: ID={}", id);
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("科目が見つかりません: " + id));
         subject.setName(form.getName());
         subject.setDescription(form.getDescription());
         Subject updated = subjectRepository.save(subject);
+        logger.info("科目を更新しました: ID={}, 名前={}", updated.getId(), updated.getName());
         return toDto(updated);
     }
     
     public void delete(Long id) {
+        logger.warn("科目を削除します: ID={}", id);
         subjectRepository.deleteById(id);
+        logger.info("科目を削除しました: ID={}", id);
     }
     
     private SubjectDto toDto(Subject entity) {

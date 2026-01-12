@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StudyItemService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(StudyItemService.class);
     
     private final StudyItemRepository studyItemRepository;
     private final SubjectRepository subjectRepository;
@@ -30,14 +34,20 @@ public class StudyItemService {
     
     @Transactional(readOnly = true)
     public List<StudyItemDto> findAll() {
-        return studyItemRepository.findAll().stream()
+        logger.debug("すべての学習項目を取得します");
+        List<StudyItemDto> result = studyItemRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        logger.info("学習項目を{}件取得しました", result.size());
+        return result;
     }
 
     @Transactional(readOnly = true)
     public Page<StudyItemDto> findAll(Pageable pageable) {
-        return studyItemRepository.findAll(pageable).map(this::toDto);
+        logger.debug("学習項目一覧をページングして取得します");
+        Page<StudyItem> result = studyItemRepository.findAll(pageable);
+        logger.info("学習項目を{}件取得しました", result.getTotalElements());
+        return result.map(this::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +111,7 @@ public class StudyItemService {
     }
     
     public StudyItemDto create(StudyItemForm form) {
+        logger.info("新しい学習項目を作成します: {}", form.getTitle());
         Subject subject = subjectRepository.findById(form.getSubjectId())
                 .orElseThrow(() -> new RuntimeException("科目が見つかりません: " + form.getSubjectId()));
         
@@ -111,10 +122,12 @@ public class StudyItemService {
         studyItem.setStudyTime(form.getStudyTime() != null ? form.getStudyTime() : 0);
         
         StudyItem saved = studyItemRepository.save(studyItem);
+        logger.info("学習項目を作成しました: ID={}, タイトル={}", saved.getId(), saved.getTitle());
         return toDto(saved);
     }
     
     public StudyItemDto update(Long id, StudyItemForm form) {
+        logger.info("学習項目を更新します: ID={}", id);
         StudyItem studyItem = studyItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("学習項目が見つかりません: " + id));
         
@@ -129,11 +142,14 @@ public class StudyItemService {
         studyItem.setStudyTime(form.getStudyTime() != null ? form.getStudyTime() : 0);
         
         StudyItem updated = studyItemRepository.save(studyItem);
+        logger.info("学習項目を更新しました: ID={}, タイトル={}", updated.getId(), updated.getTitle());
         return toDto(updated);
     }
     
     public void delete(Long id) {
+        logger.warn("学習項目を削除します: ID={}", id);
         studyItemRepository.deleteById(id);
+        logger.info("学習項目を削除しました: ID={}", id);
     }
     
     private StudyItemDto toDto(StudyItem entity) {
