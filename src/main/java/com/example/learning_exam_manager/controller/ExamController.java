@@ -16,10 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/exams")
 public class ExamController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ExamController.class);
     
     private final ExamService examService;
     private final SubjectService subjectService;
@@ -35,6 +39,7 @@ public class ExamController {
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        Model model) {
+        logger.debug("試験一覧を表示します: keyword={}, page={}, size={}", keyword, page, size);
         // Pageableの作成（ページ番号、サイズ、ソート順を指定）
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         
@@ -53,20 +58,25 @@ public class ExamController {
         model.addAttribute("pageSize", size);  // ページサイズ
         model.addAttribute("activePage", "exams");
         model.addAttribute("title", "試験一覧");
+        logger.info("試験一覧を表示しました: totalPages={}, totalItems={}, pageSize={}", examsPage.getTotalPages(), examsPage.getTotalElements(), size);
         return "exams/list";
     }
     
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
+        logger.debug("試験詳細を表示します: ID={}", id);
         ExamDto exam = examService.findById(id);
         model.addAttribute("exam", exam);
+        logger.info("試験詳細を表示しました: ID={}, 試験名={}", id, exam.getExamName());
         return "exams/detail";
     }
     
     @GetMapping("/new")
     public String newForm(Model model) {
+        logger.debug("試験登録画面を表示します");
         model.addAttribute("examForm", new ExamForm());
         model.addAttribute("subjects", subjectService.findAll());
+        logger.info("試験登録画面を表示しました");
         return "exams/new";
     }
     
@@ -80,12 +90,14 @@ public class ExamController {
             return "exams/new";
         }
         examService.create(form);
+        logger.info("試験を登録しました: 試験名={}", form.getExamName());
         redirectAttributes.addFlashAttribute("message", "試験を登録しました");
         return "redirect:/exams";
     }
     
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        logger.debug("試験編集画面を表示します: ID={}", id);
         ExamDto exam = examService.findById(id);
         ExamForm form = new ExamForm(
                 exam.getSubjectId(),
@@ -96,6 +108,7 @@ public class ExamController {
         model.addAttribute("examForm", form);
         model.addAttribute("examId", id);
         model.addAttribute("subjects", subjectService.findAll());
+        logger.info("試験編集画面を表示しました: ID={}, 試験名={}", id, exam.getExamName());
         return "exams/edit";
     }
     
@@ -106,18 +119,22 @@ public class ExamController {
                         Model model,
                         RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            logger.warn("試験編集画面でエラーが発生しました: ID={}", id);
             model.addAttribute("examId", id);
             model.addAttribute("subjects", subjectService.findAll());
             return "exams/edit";
         }
         examService.update(id, form);
+        logger.info("試験を更新しました: ID={}, 試験名={}", id, form.getExamName());
         redirectAttributes.addFlashAttribute("message", "試験を更新しました");
         return "redirect:/exams";
     }
     
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        logger.warn("試験を削除します: ID={}", id);
         examService.delete(id);
+        logger.info("試験を削除しました: ID={}", id);
         redirectAttributes.addFlashAttribute("message", "試験を削除しました");
         return "redirect:/exams";
     }
