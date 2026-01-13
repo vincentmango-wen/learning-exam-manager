@@ -40,3 +40,4 @@ out/
 
 ### 機密情報 ###
 application.properties
+logs/
