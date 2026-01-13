@@ -251,3 +251,76 @@ Caused by: com.mysql.cj.exceptions.UnableToConnectException: Public Key Retrieva
 2026-01-13 22:30:46 [http-nio-8080-exec-3] DEBUG c.e.l.service.ExamService - 試験一覧をページングして取得します
 2026-01-13 22:30:46 [http-nio-8080-exec-3] INFO  c.e.l.service.ExamService - 試験を18件取得しました
 2026-01-13 22:30:46 [http-nio-8080-exec-3] INFO  c.e.l.controller.ExamController - 試験一覧を表示しました: totalPages=2, totalItems=18, pageSize=10
+2026-01-13 23:26:27 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.0.1.Final
+2026-01-13 23:26:27 [main] INFO  c.e.l.LearningExamManagerApplication - Starting LearningExamManagerApplication using Java 23.0.2 with PID 42820 (/Users/fumikun.wen/Desktop/project/Learning&Exam Manger app/learning-exam-manager/build/classes/java/main started by fumikun.wen in /Users/fumikun.wen/Desktop/project/Learning&Exam Manger app/learning-exam-manager)
+2026-01-13 23:26:27 [main] DEBUG c.e.l.LearningExamManagerApplication - Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-13 23:26:27 [main] INFO  c.e.l.LearningExamManagerApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-13 23:26:27 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-13 23:26:27 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 22 ms. Found 4 JPA repository interfaces.
+2026-01-13 23:26:27 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-13 23:26:27 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-01-13 23:26:27 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-13 23:26:27 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-13 23:26:27 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 522 ms
+2026-01-13 23:26:27 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-01-13 23:26:28 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@76e6c070
+2026-01-13 23:26:28 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-01-13 23:26:28 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:mysql://localhost:3306/learning_exam_manager?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=utf8&allowPublicKeyRetrieval=true (MySQL 9.3)
+2026-01-13 23:26:28 [main] WARN  o.f.c.i.database.base.Database - Using MySQL 9.3 which is newer than the version Flyway has been verified with. The latest verified version of MySQL is 8.1.
+2026-01-13 23:26:28 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.016s)
+2026-01-13 23:26:28 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema `learning_exam_manager`: 2
+2026-01-13 23:26:28 [main] INFO  o.f.core.internal.command.DbMigrate - Schema `learning_exam_manager` is up to date. No migration necessary.
+2026-01-13 23:26:28 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-13 23:26:28 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-13 23:26:28 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-13 23:26:28 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-13 23:26:28 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/learning_exam_manager?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=utf8&allowPublicKeyRetrieval=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 9.3
+	Default catalog/schema: learning_exam_manager/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-13 23:26:29 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-13 23:26:29 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-13 23:26:29 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-13 23:26:29 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-13 23:26:29 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-01-13 23:26:29 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-13 23:26:29 [main] INFO  c.e.l.LearningExamManagerApplication - Started LearningExamManagerApplication in 2.819 seconds (process running for 3.003)
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.controller.DashboardController - ダッシュボードを表示します
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - すべての科目の進捗率を取得します
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=1, subjectName=Java基礎
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=1, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=2, subjectName=Spring Boot
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=2, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=3, subjectName=データベース
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=3, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=4, subjectName=Web開発基礎
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=4, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=5, subjectName=アルゴリズムとデータ構造
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=5, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=6, subjectName=Git・バージョン管理
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=6, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=7, subjectName=RESTful API
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=7, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=8, subjectName=セキュリティ基礎
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=8, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=9, subjectName=テスト駆動開発
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=9, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=10, subjectName=Docker基礎
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算しました: subjectId=10, 完了数=8, 総数=10, 進捗率=80.0%
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 進捗率を計算します: subjectId=13, subjectName=test
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 学習項目が存在しないため、進捗率は0%です: subjectId=13
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  c.e.l.service.DashboardService - 科目の進捗率を11件取得しました
+2026-01-13 23:26:33 [http-nio-8080-exec-1] DEBUG c.e.l.service.DashboardService - 直近の試験結果を取得します
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  c.e.l.service.DashboardService - 直近の試験結果を64件取得しました
+2026-01-13 23:26:33 [http-nio-8080-exec-1] INFO  c.e.l.controller.DashboardController - ダッシュボードを表示しました: 科目数=11, 試験結果数=64
