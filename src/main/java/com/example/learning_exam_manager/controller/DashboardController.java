@@ -3,6 +3,8 @@ package com.example.learning_exam_manager.controller;
 import com.example.learning_exam_manager.dto.ExamResultDto;
 import com.example.learning_exam_manager.dto.SubjectProgressDto;
 import com.example.learning_exam_manager.service.DashboardService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +15,8 @@ import java.util.List;
 @Controller
 public class DashboardController {
     
+    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+    
     private final DashboardService dashboardService;
     
     @Autowired
@@ -22,6 +26,7 @@ public class DashboardController {
     
     @GetMapping("/")
     public String index(Model model) {
+        logger.debug("ダッシュボードを表示します");
         List<SubjectProgressDto> subjectProgress = dashboardService.getAllSubjectProgress();
         List<ExamResultDto> recentExamResults = dashboardService.getRecentExamResults();
         
@@ -29,6 +34,8 @@ public class DashboardController {
         model.addAttribute("recentExamResults", recentExamResults);
         model.addAttribute("activePage", "dashboard");
         model.addAttribute("title", "ダッシュボード");
+        logger.info("ダッシュボードを表示しました: 科目数={}, 試験結果数={}", 
+                subjectProgress.size(), recentExamResults.size());
         return "dashboard/index";
     }
 }
