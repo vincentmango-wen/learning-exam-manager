@@ -26,7 +26,10 @@
                 <!-- グラフを表示 -->
                 <div class="card mb-4">
                     <div class="card-body">
-                        <canvas id="progressChart" width="400" height="200"></canvas>
+                        <canvas id="progressChart" 
+                                width="400" 
+                                height="200"
+                                th:attr="data-subject-names=${subjectNamesJson}, data-progress-rates=${progressRatesJson}"></canvas>
                     </div>
                 </div>
 
@@ -72,7 +75,10 @@
                 <!-- グラフを表示 -->
                 <div class="card mb-4">
                     <div class="card-body">
-                        <canvas id="examResultChart" width="400" height="200"></canvas>
+                        <canvas id="examResultChart" 
+                                width="400" 
+                                height="200"
+                                th:attr="data-taken-dates=${takenDatesJson}, data-scores=${scoresJson}"></canvas>
                     </div>
                 </div>
 
@@ -118,72 +124,76 @@
         // 進捗率の棒グラフ
         const progressCtx = document.getElementById('progressChart');
         if (progressCtx) {
-            const progressData = {
-                labels: [/* 科目名のリスト */],
-                datasets: [{
-                    label: '進捗率 (%)',
-                    data: [/* 進捗率のリスト */],
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            };
+            // data属性からJSON文字列を取得
+            const subjectNamesJson = progressCtx.getAttribute('data-subject-names');
+            const progressRatesJson = progressCtx.getAttribute('data-progress-rates');
             
-            // Thymeleafでデータを埋め込む
-            const subjectNames = /*[[${subjectProgress.![subjectName]}]]*/ [];
-            const progressRates = /*[[${subjectProgress.![progressRate]}]]*/ [];
-            
-            progressData.labels = subjectNames;
-            progressData.datasets[0].data = progressRates;
-            
-            new Chart(progressCtx, {
-                type: 'bar',
-                data: progressData,
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
+            if (subjectNamesJson && progressRatesJson) {
+                const subjectNames = JSON.parse(subjectNamesJson);
+                const progressRates = JSON.parse(progressRatesJson);
+                
+                const progressData = {
+                    labels: subjectNames,
+                    datasets: [{
+                        label: '進捗率 (%)',
+                        data: progressRates,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                };
+                
+                new Chart(progressCtx, {
+                    type: 'bar',
+                    data: progressData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
 
         // 試験結果の折れ線グラフ
         const examResultCtx = document.getElementById('examResultChart');
         if (examResultCtx) {
-            const examResultData = {
-                labels: [/* 受験日のリスト */],
-                datasets: [{
-                    label: '得点',
-                    data: [/* 得点のリスト */],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }]
-            };
+            // data属性からJSON文字列を取得
+            const takenDatesJson = examResultCtx.getAttribute('data-taken-dates');
+            const scoresJson = examResultCtx.getAttribute('data-scores');
             
-            // Thymeleafでデータを埋め込む
-            const takenDates = /*[[${recentExamResults.![#temporals.format(takenAt, 'yyyy-MM-dd')]}]]*/ [];
-            const scores = /*[[${recentExamResults.![score]}]]*/ [];
-            
-            examResultData.labels = takenDates;
-            examResultData.datasets[0].data = scores;
-            
-            new Chart(examResultCtx, {
-                type: 'line',
-                data: examResultData,
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+            if (takenDatesJson && scoresJson) {
+                const takenDates = JSON.parse(takenDatesJson);
+                const scores = JSON.parse(scoresJson);
+                
+                const examResultData = {
+                    labels: takenDates,
+                    datasets: [{
+                        label: '得点',
+                        data: scores,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                };
+                
+                new Chart(examResultCtx, {
+                    type: 'line',
+                    data: examResultData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     </script>
 </body>
