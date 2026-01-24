@@ -50,6 +50,13 @@ public class ExamResultService {
     }
     
     @Transactional(readOnly = true)
+    public Page<ExamResultDto> findByPassed(Boolean passed, Pageable pageable) {
+        logger.debug("試験結果を取得します: passed={}", passed);
+        Page<ExamResult> examResultsPage = examResultRepository.findByPassed(passed, pageable);
+        return examResultsPage.map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
     public List<ExamResultDto> findByExamId(Long examId) {
         return examResultRepository.findByExamId(examId).stream()
                 .map(this::toDto)

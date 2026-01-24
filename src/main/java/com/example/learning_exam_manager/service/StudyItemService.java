@@ -58,6 +58,18 @@ public class StudyItemService {
     }
 
     @Transactional(readOnly = true)
+    public Page<StudyItemDto> findPendingStudyItems(Pageable pageable) {
+        logger.debug("未達科目に含まれる学習項目を取得します");
+        
+        // よりシンプルな実装：statusがDONEでない学習項目を取得
+        Page<StudyItem> itemsPage = studyItemRepository.findByStatusNot(
+            StudyItem.Status.DONE, pageable);
+        
+        logger.info("未達学習項目を{}件取得しました", itemsPage.getTotalElements());
+        return itemsPage.map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
     public List<StudyItemDto> search(String keyword, Long subjectId) {
         if ((keyword == null || keyword.trim().isEmpty()) && subjectId == null) {
             // 検索条件がない場合は全件取得

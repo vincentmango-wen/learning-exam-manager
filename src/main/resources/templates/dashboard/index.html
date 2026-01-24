@@ -34,12 +34,11 @@
                      th:classappend="${dashboardSummary.overallProgressRate >= 80} ? 'bg-success text-white' : (${dashboardSummary.overallProgressRate >= 60} ? 'bg-warning text-dark' : 'bg-danger text-white')"
                      style="transition: box-shadow 0.3s ease;">
                     <div class="card-body text-center">
-                        <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
-                        <h3 class="mt-2" th:if="${dashboardSummary.overallProgressRate != null}" 
-                            th:text="${#numbers.formatDecimal(dashboardSummary.overallProgressRate, 1, 1)} + '%'">0%</h3>
-                        <h3 class="mt-2 text-muted" th:if="${dashboardSummary.overallProgressRate == null}">--%</h3>
-                        <p class="mb-2">全体進捗率</p>
-                        <a th:href="@{/subjects}" class="text-decoration-none small">詳細を見る</a>
+                        <i class="bi bi-graph-up" style="font-size: 3rem;"></i>
+                        <h2 class="mt-2" th:if="${dashboardSummary.overallProgressRate != null}" 
+                            th:text="${#numbers.formatDecimal(dashboardSummary.overallProgressRate, 1, 1)} + '%'">0%</h2>
+                        <h2 class="mt-2 text-muted" th:if="${dashboardSummary.overallProgressRate == null}">--%</h2>
+                        <h3 class="mb-2">全体進捗率</h3>
                     </div>
                 </div>
             </div>
@@ -53,7 +52,7 @@
                         <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
                         <h3 class="mt-2" th:text="${dashboardSummary.pendingSubjects} + '件'">0件</h3>
                         <p class="mb-2">未達科目数</p>
-                        <a th:href="@{/study-items}" class="text-decoration-none small">詳細を見る</a>
+                        <a th:href="@{/study-items(pending=true)}" class="text-decoration-none small">詳細を見る</a>
                     </div>
                 </div>
             </div>
@@ -67,7 +66,7 @@
                         <i class="bi bi-arrow-repeat" style="font-size: 2rem;"></i>
                         <h3 class="mt-2" th:text="${dashboardSummary.retestExamCount} + '件'">0件</h3>
                         <p class="mb-2">再受験必要試験数</p>
-                        <a th:href="@{/exam-results}" class="text-decoration-none small">詳細を見る</a>
+                        <a th:href="@{/exam-results(passed=false)}" class="text-decoration-none small">詳細を見る</a>
                     </div>
                 </div>
             </div>

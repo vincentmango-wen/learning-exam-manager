@@ -32,10 +32,11 @@ public class SubjectController {
     
     @GetMapping
     public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(required = false) String status,      
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        Model model) {
-        logger.debug("科目一覧を表示します: keyword={}, page={}, size={}", keyword, page, size);
+        logger.debug("科目一覧を表示します: keyword={}, status={}, page={}, size={}", keyword, status, page, size);
         // Pageableの作成（ページ番号、サイズ、ソート順を指定）
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         
@@ -43,6 +44,10 @@ public class SubjectController {
         if (keyword != null && !keyword.trim().isEmpty()) {
             subjectsPage = subjectService.searchByName(keyword, pageable);
             model.addAttribute("keyword", keyword);
+        } else if ("pending".equals(status)) {
+            // 未達科目のみを取得
+            subjectsPage = subjectService.findPendingSubjects(pageable);
+            model.addAttribute("status", status);
         } else {
             subjectsPage = subjectService.findAll(pageable);
         }

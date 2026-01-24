@@ -17,6 +17,7 @@ public interface ExamResultRepository extends JpaRepository<ExamResult, Long> {
     // 既存のList版メソッド（残しておく）
     List<ExamResult> findByExamId(Long examId);
     List<ExamResult> findByPassed(Boolean passed);
+    Page<ExamResult> findByPassed(Boolean passed, Pageable pageable); 
     
     @Query("SELECT er FROM ExamResult er ORDER BY er.takenAt DESC")
     List<ExamResult> findRecentResults();
