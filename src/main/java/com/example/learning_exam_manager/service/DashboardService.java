@@ -1,5 +1,6 @@
 package com.example.learning_exam_manager.service;
 
+import com.example.learning_exam_manager.dto.DashboardSummaryDto;
 import com.example.learning_exam_manager.dto.ExamResultDto;
 import com.example.learning_exam_manager.dto.SubjectProgressDto;
 import com.example.learning_exam_manager.entity.StudyItem;
@@ -7,6 +8,7 @@ import com.example.learning_exam_manager.entity.Subject;
 import com.example.learning_exam_manager.exception.ResourceNotFoundException;
 import com.example.learning_exam_manager.repository.StudyItemRepository;
 import com.example.learning_exam_manager.repository.SubjectRepository;
+import com.example.learning_exam_manager.repository.ExamResultRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +27,69 @@ public class DashboardService {
     private final SubjectRepository subjectRepository;
     private final StudyItemRepository studyItemRepository;
     private final ExamResultService examResultService;
+    private final ExamResultRepository examResultRepository;
     
     @Autowired
     public DashboardService(SubjectRepository subjectRepository, 
                            StudyItemRepository studyItemRepository,
-                           ExamResultService examResultService) {
+                           ExamResultService examResultService,
+                           ExamResultRepository examResultRepository) {
         this.subjectRepository = subjectRepository;
         this.studyItemRepository = studyItemRepository;
         this.examResultService = examResultService;
+        this.examResultRepository = examResultRepository;
     }
     
+
+    // サマリー情報を取得するメソッド
+    @Transactional(readOnly = true)
+    public DashboardSummaryDto getDashboardSummary() {
+        logger.debug("ダッシュボードサマリー情報を取得します");
+        
+        List<Subject> allSubjects = subjectRepository.findAll();
+        Long totalSubjects = (long) allSubjects.size();
+        
+        Long completedSubjects = allSubjects.stream()
+                .filter(subject -> {
+                    List<StudyItem> studyItems = studyItemRepository.findBySubjectId(subject.getId());
+                    if (studyItems.isEmpty()) {
+                        return false;
+                    }
+                    return studyItems.stream()
+                            .allMatch(item -> item.getStatus() == StudyItem.Status.DONE);
+                })
+                .count();
+        
+        Long pendingSubjects = totalSubjects - completedSubjects;
+        
+        // 全体進捗率を全科目の進捗率の平均として計算
+        Double overallProgressRate = null;
+        List<SubjectProgressDto> allProgress = getAllSubjectProgress();
+        if (!allProgress.isEmpty()) {
+            double sum = allProgress.stream()
+                    .mapToDouble(SubjectProgressDto::getProgressRate)
+                    .sum();
+            double average = sum / allProgress.size();
+            overallProgressRate = Math.round(average * 10.0) / 10.0;
+        }
+        
+        Long retestExamCount = (long) examResultRepository.findByPassed(false).size();
+        
+        DashboardSummaryDto summary = new DashboardSummaryDto(
+                totalSubjects,
+                completedSubjects,
+                pendingSubjects,
+                overallProgressRate,
+                retestExamCount
+        );
+        
+        logger.info("ダッシュボードサマリー情報を取得しました: 全科目数={}, 完了科目数={}, 未達科目数={}, 進捗率={}%, 再受験必要試験数={}", 
+                totalSubjects, completedSubjects, pendingSubjects, overallProgressRate, retestExamCount);
+        
+        return summary;
+    }
+
+
     @Transactional(readOnly = true)
     public List<SubjectProgressDto> getAllSubjectProgress() {
         logger.debug("すべての科目の進捗率を取得します");

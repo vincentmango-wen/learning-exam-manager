@@ -12,8 +12,10 @@ import org.springframework.data.domain.Pageable;
 import com.example.learning_exam_manager.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
+import org.springframework.data.domain.PageImpl;
+import java.util.Collections;
+import com.example.learning_exam_manager.entity.StudyItem;
+import com.example.learning_exam_manager.repository.StudyItemRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +26,46 @@ public class SubjectService {
     private static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
     
     private final SubjectRepository subjectRepository;
+    private final StudyItemRepository studyItemRepository;
     
     @Autowired
-    public SubjectService(SubjectRepository subjectRepository) {
+    public SubjectService(SubjectRepository subjectRepository, StudyItemRepository studyItemRepository) {
         this.subjectRepository = subjectRepository;
+        this.studyItemRepository = studyItemRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SubjectDto> findPendingSubjects(Pageable pageable) {
+        logger.debug("未達科目を取得します");
+        
+        // 全科目を取得
+        List<Subject> allSubjects = subjectRepository.findAll();
+        
+        // 未達科目をフィルタリング（全学習項目がDONEでない科目）
+        List<Subject> pendingSubjects = allSubjects.stream()
+                .filter(subject -> {
+                    List<StudyItem> studyItems = studyItemRepository.findBySubjectId(subject.getId());
+                    if (studyItems.isEmpty()) {
+                        return true; // 学習項目が存在しない場合は未達
+                    }
+                    return !studyItems.stream()
+                            .allMatch(item -> item.getStatus() == StudyItem.Status.DONE);
+                })
+                .collect(Collectors.toList());
+        
+        // Pageableに合わせてページング処理
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), pendingSubjects.size());
+        List<Subject> pagedSubjects = start < pendingSubjects.size() 
+                ? pendingSubjects.subList(start, end) 
+                : Collections.emptyList();
+        
+        // DTOに変換
+        List<SubjectDto> subjectDtos = pagedSubjects.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(subjectDtos, pageable, pendingSubjects.size());
     }
     
     @Transactional(readOnly = true)

@@ -37,27 +37,30 @@ public class ExamResultController {
     
     @GetMapping
     public String list(@RequestParam(required = false) String keyword,
+                       @RequestParam(required = false) Boolean passed,  // 追加
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        Model model) {
-        logger.debug("試験結果一覧を表示します: keyword={}, page={}, size={}", keyword, page, size);
-        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
-        // 試験結果は受験日の降順でソート（新しい順）
+        logger.debug("試験結果一覧を表示します: keyword={}, passed={}, page={}, size={}", keyword, passed, page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("takenAt").descending());
         
         Page<ExamResultDto> examResultsPage;
         if (keyword != null && !keyword.trim().isEmpty()) {
             examResultsPage = examResultService.search(keyword, pageable);
-            model.addAttribute("keyword", keyword);  // 検索キーワードを保持
+            model.addAttribute("keyword", keyword);
+        } else if (passed != null) {
+            // passedパラメータでフィルタリング
+            examResultsPage = examResultService.findByPassed(passed, pageable);
+            model.addAttribute("passed", passed);
         } else {
             examResultsPage = examResultService.findAll(pageable);
         }
         
-        model.addAttribute("examResults", examResultsPage.getContent());  // 現在のページのデータ
-        model.addAttribute("currentPage", page);  // 現在のページ番号
-        model.addAttribute("totalPages", examResultsPage.getTotalPages());  // 総ページ数
-        model.addAttribute("totalItems", examResultsPage.getTotalElements());  // 総件数
-        model.addAttribute("pageSize", size);  // ページサイズ
+        model.addAttribute("examResults", examResultsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", examResultsPage.getTotalPages());
+        model.addAttribute("totalItems", examResultsPage.getTotalElements());
+        model.addAttribute("pageSize", size);
         model.addAttribute("activePage", "exam-results");
         model.addAttribute("title", "試験結果一覧");
         logger.info("試験結果一覧を表示しました: totalPages={}, totalItems={}, pageSize={}", examResultsPage.getTotalPages(), examResultsPage.getTotalElements(), size);

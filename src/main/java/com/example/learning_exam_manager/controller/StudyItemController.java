@@ -36,22 +36,32 @@ public class StudyItemController {
     @GetMapping
     public String list(@RequestParam(required = false) String keyword,
                        @RequestParam(required = false) Long subjectId,
+                       @RequestParam(required = false) Boolean pending,  // 追加
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        Model model) {
-        logger.debug("学習項目一覧を表示します: keyword={}, subjectId={}, page={}, size={}", keyword, subjectId, page, size);
-        // Pageableの作成（ページ番号、サイズ、ソート順を指定）
+        logger.debug("学習項目一覧を表示します: keyword={}, subjectId={}, pending={}, page={}, size={}", 
+                     keyword, subjectId, pending, page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         
-        Page<StudyItemDto> studyItemsPage = studyItemService.search(keyword, subjectId, pageable);
+        Page<StudyItemDto> studyItemsPage;
         
-        model.addAttribute("studyItems", studyItemsPage.getContent());  // 現在のページのデータ
-        model.addAttribute("currentPage", page);  // 現在のページ番号
-        model.addAttribute("totalPages", studyItemsPage.getTotalPages());  // 総ページ数
-        model.addAttribute("totalItems", studyItemsPage.getTotalElements());  // 総件数
-        model.addAttribute("pageSize", size);  // ページサイズ
+        if (Boolean.TRUE.equals(pending)) {
+            // 未達学習項目のみを取得
+            studyItemsPage = studyItemService.findPendingStudyItems(pageable);
+            model.addAttribute("pending", pending);
+        } else {
+            // 既存の検索ロジック
+            studyItemsPage = studyItemService.search(keyword, subjectId, pageable);
+        }
         
-        // 検索条件を保持（検索フォーム用）
+        model.addAttribute("studyItems", studyItemsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", studyItemsPage.getTotalPages());
+        model.addAttribute("totalItems", studyItemsPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        
+        // 検索条件を保持
         if (keyword != null && !keyword.trim().isEmpty()) {
             model.addAttribute("keyword", keyword);
         }
@@ -59,10 +69,11 @@ public class StudyItemController {
             model.addAttribute("selectedSubjectId", subjectId);
         }
         
-        model.addAttribute("subjects", subjectService.findAll());  // 科目選択用
+        model.addAttribute("subjects", subjectService.findAll());
         model.addAttribute("activePage", "study-items");
         model.addAttribute("title", "学習項目一覧");
-        logger.info("学習項目一覧を表示しました: totalPages={}, totalItems={}, pageSize={}", studyItemsPage.getTotalPages(), studyItemsPage.getTotalElements(), size);
+        logger.info("学習項目一覧を表示しました: totalPages={}, totalItems={}, pageSize={}", 
+                    studyItemsPage.getTotalPages(), studyItemsPage.getTotalElements(), size);
         return "study-items/list";
     }
     

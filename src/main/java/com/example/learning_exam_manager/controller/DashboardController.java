@@ -1,5 +1,6 @@
 package com.example.learning_exam_manager.controller;
 
+import com.example.learning_exam_manager.dto.DashboardSummaryDto;
 import com.example.learning_exam_manager.dto.ExamResultDto;
 import com.example.learning_exam_manager.dto.SubjectProgressDto;
 import com.example.learning_exam_manager.service.DashboardService;
@@ -34,6 +35,9 @@ public class DashboardController {
         logger.debug("ダッシュボードを表示します");
         List<SubjectProgressDto> subjectProgress = dashboardService.getAllSubjectProgress();
         List<ExamResultDto> recentExamResults = dashboardService.getRecentExamResults();
+        
+        DashboardSummaryDto summary = dashboardService.getDashboardSummary();
+        model.addAttribute("dashboardSummary", summary);
         
         model.addAttribute("subjectProgress", subjectProgress);
         model.addAttribute("recentExamResults", recentExamResults);
