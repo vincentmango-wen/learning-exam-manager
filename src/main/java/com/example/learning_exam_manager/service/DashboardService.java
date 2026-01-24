@@ -62,10 +62,15 @@ public class DashboardService {
         
         Long pendingSubjects = totalSubjects - completedSubjects;
         
-        Double overallProgressRate = 0.0;
-        if (totalSubjects > 0) {
-            double rawRate = (double) completedSubjects / totalSubjects * 100.0;
-            overallProgressRate = Math.round(rawRate * 10.0) / 10.0;
+        // 全体進捗率を全科目の進捗率の平均として計算
+        Double overallProgressRate = null;
+        List<SubjectProgressDto> allProgress = getAllSubjectProgress();
+        if (!allProgress.isEmpty()) {
+            double sum = allProgress.stream()
+                    .mapToDouble(SubjectProgressDto::getProgressRate)
+                    .sum();
+            double average = sum / allProgress.size();
+            overallProgressRate = Math.round(average * 10.0) / 10.0;
         }
         
         Long retestExamCount = (long) examResultRepository.findByPassed(false).size();
