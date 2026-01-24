@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <th:block th:replace="~{fragments/layout :: footer-styles}"></th:block>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* サマリーカードのホバー効果 */
+        .card.shadow-sm:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5) !important;
+            transform: translateY(-2px);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+    </style>
 </head>
 <body>
     <!-- ナビゲーションメニューを読み込み -->
