@@ -17,7 +17,50 @@
         <div th:replace="~{fragments/layout :: messages}"></div>
         
         <h1>ダッシュボード</h1>
-        
+        <!-- KPIサマリーカードセクション -->
+        <div class="row mt-4 mb-4">
+            <!-- 全体進捗率カード -->
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card shadow-sm h-100" 
+                     th:classappend="${dashboardSummary.overallProgressRate >= 80} ? 'bg-success text-white' : (${dashboardSummary.overallProgressRate >= 60} ? 'bg-warning text-dark' : 'bg-danger text-white')"
+                     style="transition: box-shadow 0.3s ease;">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+                        <h3 class="mt-2" th:text="${#numbers.formatDecimal(dashboardSummary.overallProgressRate, 1, 1)} + '%'">0%</h3>
+                        <p class="mb-2">全体進捗率</p>
+                        <a th:href="@{/subjects/list}" class="text-decoration-none small">詳細を見る</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 未達科目数カード -->
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card shadow-sm h-100" 
+                     th:classappend="${dashboardSummary.pendingSubjects == 0} ? 'bg-secondary text-white' : 'bg-danger text-white'"
+                     style="transition: box-shadow 0.3s ease;">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                        <h3 class="mt-2" th:text="${dashboardSummary.pendingSubjects} + '件'">0件</h3>
+                        <p class="mb-2">未達科目数</p>
+                        <a th:href="@{/subjects/list(status='pending')}" class="text-decoration-none small">詳細を見る</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 再受験必要試験数カード -->
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card shadow-sm h-100" 
+                     th:classappend="${dashboardSummary.retestExamCount == 0} ? 'bg-secondary text-white' : 'bg-danger text-white'"
+                     style="transition: box-shadow 0.3s ease;">
+                    <div class="card-body text-center">
+                        <i class="bi bi-arrow-repeat" style="font-size: 2rem;"></i>
+                        <h3 class="mt-2" th:text="${dashboardSummary.retestExamCount} + '件'">0件</h3>
+                        <p class="mb-2">再受験必要試験数</p>
+                        <a th:href="@{/exam-results/list(passed=false)}" class="text-decoration-none small">詳細を見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- 科目別進捗率セクション -->
         <div class="row mt-4">
             <div class="col-12">
